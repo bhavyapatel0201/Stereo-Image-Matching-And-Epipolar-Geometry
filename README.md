@@ -403,7 +403,6 @@ Potential improvements include:
 * Disparity map generation
 * Dense stereo matching
 * Depth estimation
-* 3D reconstruction
 * Visualization of epipoles
 * Support for additional feature detectors and descriptors
 * Improved handling of textureless regions
@@ -411,6 +410,27 @@ Potential improvements include:
 
 ---
 
+## Camera calibration and sparse 3D reconstruction
+
+`stereo_reconstruction.py` runs a full pipeline on a stereo pair:
+
+1. Calibrates the camera from checkerboard photos (`cv2.calibrateCamera`) and reports the reprojection error.
+2. Matches SIFT features between the two images.
+3. Estimates the fundamental and essential matrices and recovers the relative camera pose.
+4. Triangulates the matches into 3D points, removes outliers and saves a `.ply` point cloud with a plot.
+
+The result is a sparse point cloud built from matched features, not a dense depth map.
+
+```bash
+pip install -r requirements.txt
+python stereo_reconstruction.py \
+    --calib_dir ./calib_images --board_cols 9 --board_rows 6 --square_size 25 \
+    --img1 ./stereo/img1.jpg --img2 ./stereo/img2.jpg --output_dir ./results
+```
+
+Calibration photos are not included in this repository. Add your own photos of a printed checkerboard (9 x 6 inner corners, 25 mm squares) taken with the same camera as the stereo pair, and adjust `--board_cols`, `--board_rows` and `--square_size` if your board differs.
+
+---
 ## Academic Context
 
 This project demonstrates concepts commonly used in computer vision and stereo vision, including:
@@ -438,3 +458,4 @@ University of Windsor
 ## License
 
 This project is intended for academic and educational purposes.
+
